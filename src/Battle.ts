@@ -2,22 +2,29 @@ import {Pokemon} from "./Pokemon";
 import {Attack} from "./Attack";
 
 export class Battle {
-
+    static intervalId;
     constructor(private readonly pokemon1:Pokemon ,private pokemon2:Pokemon){
 
     }
-    start():Pokemon{
-        let winner:Pokemon = this.pokemon2;
-        let first:Pokemon ;
-        let second:Pokemon;
-        while(this.pokemon1.isAlive() && this.pokemon2.isAlive()){
-            let pokemonOrder:Pokemon[] = this.priority(this.pokemon1,this.pokemon2);
-            this.round(pokemonOrder[0],pokemonOrder[1])
-        }
-        if(this.pokemon1.isAlive()){
-            winner = this.pokemon1
-        }
-        return winner;
+    start():Promise<Pokemon> {
+        return new Promise((resolve, reject) => {
+            Battle.intervalId = setInterval(() => {
+                let winner: Pokemon = this.pokemon2;
+
+                let pokemonOrder: Pokemon[] = this.priority(this.pokemon1, this.pokemon2);
+
+                this.round(pokemonOrder[0], pokemonOrder[1]);
+
+                if (this.pokemon1.isAlive()) {
+                    winner = this.pokemon1;
+                    resolve(winner)
+                } else if (this.pokemon2.isAlive()) {
+                    resolve(winner)
+                }
+                clearInterval(Battle.intervalId);
+                return;
+            }, 400);
+        })
     }
     // L Level P
     //Damage = floor(floor(floor(2 * L / 5 + 2) * A * P / D) / 50) + 2
@@ -40,6 +47,7 @@ export class Battle {
         if(second.isAlive()){
             this.attack(second,first,second.mooveSet[0]);
         }
+
     }
 
     public priority(pokemon1:Pokemon,pokemon2:Pokemon):Pokemon[]{
