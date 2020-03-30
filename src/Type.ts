@@ -1,0 +1,15 @@
+export enum Type {
+    SPECTRE,
+    PLANTE,
+    FEU,
+    EAU,
+    PSY,
+    TENEBRE,
+    ACIER,
+    NORMAL,
+    VOL,
+    SOL,
+    ROCHE,
+    GLACE,
+    ELECTRIC,
+}
