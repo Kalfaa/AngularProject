@@ -12,13 +12,7 @@ export class Battle {
         let second:Pokemon;
         while(this.pokemon1.isAlive() && this.pokemon2.isAlive()){
             let pokemonOrder:Pokemon[] = this.priority(this.pokemon1,this.pokemon2);
-            first = pokemonOrder[0];
-            second = pokemonOrder[1];
-            console.log(first.name,second.name)
-            this.attack(first,second,first.mooveSet[0]);
-            if(second.isAlive()){
-                this.attack(second,first,second.mooveSet[0]);
-            }
+            this.round(pokemonOrder[0],pokemonOrder[1])
         }
         if(this.pokemon1.isAlive()){
             winner = this.pokemon1
@@ -38,6 +32,14 @@ export class Battle {
         let damage = Math.floor(Math.floor(Math.floor(2* attacker.level / 5+2)* A * moove.power / D))+2;
         console.log(receiver.name +" subit " + damage+" damage ")
         receiver.hp= receiver.hp - damage
+    }
+
+    public round(first:Pokemon,second:Pokemon){
+        console.log(first.name,second.name);
+        this.attack(first,second,first.mooveSet[0]);
+        if(second.isAlive()){
+            this.attack(second,first,second.mooveSet[0]);
+        }
     }
 
     public priority(pokemon1:Pokemon,pokemon2:Pokemon):Pokemon[]{
