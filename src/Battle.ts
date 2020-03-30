@@ -6,18 +6,24 @@ export class Battle {
     constructor(private readonly pokemon1:Pokemon ,private pokemon2:Pokemon){
 
     }
-    start():void{
+    start():Pokemon{
+        let winner:Pokemon = this.pokemon2;
         let first:Pokemon ;
         let second:Pokemon;
         while(this.pokemon1.isAlive() && this.pokemon2.isAlive()){
             let pokemonOrder:Pokemon[] = this.priority(this.pokemon1,this.pokemon2);
             first = pokemonOrder[0];
             second = pokemonOrder[1];
+            console.log(first.name,second.name)
             this.attack(first,second,first.mooveSet[0]);
             if(second.isAlive()){
                 this.attack(second,first,second.mooveSet[0]);
             }
         }
+        if(this.pokemon1.isAlive()){
+            winner = this.pokemon1
+        }
+        return winner;
     }
     // L Level P
     //Damage = floor(floor(floor(2 * L / 5 + 2) * A * P / D) / 50) + 2
