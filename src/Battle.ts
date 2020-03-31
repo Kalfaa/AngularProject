@@ -88,27 +88,33 @@ export class Battle {
         return result;
     }
 
-    checkForStrenghtAndWeekness(receiverTypes:Type[],mooveType:Type):number {
+    public checkForStrenghtAndWeekness(receiverTypes:Type[],mooveType:Type):number {
         let result:number =1;
+        let immune:boolean=false;
         receiverTypes.forEach(type=>{
             if(this.typeDict[mooveType]["strengths"].includes(type)){
                 result = result*2
             }else if (this.typeDict[mooveType]["weaknesses"].includes(type)){
                 result = result*0.5
             }else if (this.typeDict[mooveType]["immunes"].includes(type)){
-                return 0;
+                immune=true;
             }
         });
+        if(immune){
+            return 0;
+        }
         return result;
     }
 
     displayWeakness(multiplicator:number):void{
         if(multiplicator==2){
-            console.log("Ce n'est pas très efficace")
+            console.log("C'est super efficace !")
         }else if(multiplicator ==0.5 || multiplicator == 0.25){
             console.log("Ce n'est pas très efficace ...")
         }else if(multiplicator ==0){
             console.log("Aucun effet")
+        }else if(multiplicator ==4){
+            console.log("C'est super efficace !!!!!!!")
         }
     }
 

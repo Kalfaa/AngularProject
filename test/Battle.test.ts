@@ -2,9 +2,8 @@ import {Type} from "../src/Type";
 import {Attack} from "../src/Attack";
 import {Pokemon} from "../src/Pokemon";
 import {Battle} from "../src/Battle";
-//set interval
 
-var typeObect = [{"name":"NORMAL","immunes":["GHOST"],"weaknesses":["ROCK","STEEL"],"strengths":[]},
+let typeObect = [{"name":"NORMAL","immunes":["GHOST"],"weaknesses":["ROCK","STEEL"],"strengths":[]},
     {"name":"FIRE","immunes":[],"weaknesses":["FIRE","WATER","ROCK","DRAGON"],"strengths":["GRASS","ICE","BUG","STEEL"]},
     {"name":"WATER","immunes":[],"weaknesses":["WATER","GRASS","DRAGON"],"strengths":["FIRE","GROUND","ROCK"]},
     {"name":"ELECTRIC","immunes":["GROUND"],"weaknesses":["ELECTRIC","GRASS","DRAGON"],"strengths":["WATER","FLYING"]},
@@ -22,8 +21,10 @@ var typeObect = [{"name":"NORMAL","immunes":["GHOST"],"weaknesses":["ROCK","STEE
     {"name":"DARK","immunes":[],"weaknesses":["FIGHTING","DARK"],"strengths":["PSYCHIC","GHOST"]},
     {"name":"STEEL","immunes":[],"weaknesses":["FIRE","WATER","ELECTRIC","STEEL"],"strengths":["ICE","ROCK"]}];
 
+let pkm1 = new Pokemon("Chenipan", [Type.GRASS],1000,1,34,33,33,33,33,[]);
+let pkm2 = new Pokemon("Ferossinge", [Type.GRASS],1000,1,33,33,33,33,33,[]);
 
-describe("Test Battle",()=> {
+describe("Instanciate Battle",()=> {
     test('Should', () => {
         let griffe = new Attack("griffe",Type.NORMAL,40,false);
         let chenipan = new Pokemon("Chenipan", [Type.GRASS],1000,1,34,33,33,33,33,[griffe]);
@@ -36,7 +37,7 @@ describe("Test Battle",()=>{
     let griffe;
     let chenipan;
     let ferossinge;
-    let battle;
+    let battle:Battle;
     beforeEach(() => {
         griffe = new Attack("griffe",Type.NORMAL,40,false);
         chenipan = new Pokemon("Chenipan", [Type.GRASS],1000,1,34,33,33,33,33,[griffe]);
@@ -44,15 +45,43 @@ describe("Test Battle",()=>{
         battle = new Battle(chenipan,ferossinge,typeObect);
     });
 
-test('Should apply damage', () => {
-    battle.attack(chenipan,ferossinge,griffe);
+    test('Should apply damage', () => {
+        battle.attack(chenipan,ferossinge,griffe);
 
-    expect(ferossinge.hp).toBe(918);
+        expect(ferossinge.hp).toBe(918);
+    });
+
+    test('Should battle',async ()=> {
+            let winner = await battle.start();
+            expect(winner.name).toBe("Chenipan");
+    });
+
 });
 
-test('Should battle',async ()=> {
-        let winner = await battle.start();
-        expect(winner.name).toBe("Chenipan");
-});
+describe("Test weakness and strenghts",()=> {
+    let battle= new Battle(pkm1,pkm2,typeObect);
+    test('checkForStrenghtAndWeekness apply good modificator * 4', () => {
+        let res = battle.checkForStrenghtAndWeekness([Type.FLYING, Type.WATER], Type.ELECTRIC);
+        expect(res).toBe(4);
+    });
 
+    test('checkForStrenghtAndWeekness apply good modificator * 2', () => {
+        let res = battle.checkForStrenghtAndWeekness([Type.WATER], Type.ELECTRIC);
+        expect(res).toBe(2);
+    });
+
+    test('checkForStrenghtAndWeekness apply good modificator * 0.5', () => {
+        let res = battle.checkForStrenghtAndWeekness([Type.GRASS], Type.WATER);
+        expect(res).toBe(0.5);
+    });
+
+    test('checkForStrenghtAndWeekness apply good modificator * 0.25', () => {
+        let res = battle.checkForStrenghtAndWeekness([Type.DRAGON, Type.GRASS], Type.WATER);
+        expect(res).toBe(0.25);
+    });
+
+    test('checkForStrenghtAndWeekness apply good modificator * 0', () => {
+        let res = battle.checkForStrenghtAndWeekness([Type.FLYING], Type.GROUND);
+        expect(res).toBe(0);
+    });
 });
