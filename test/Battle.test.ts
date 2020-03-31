@@ -29,7 +29,7 @@ let pkm2 = new Pokemon("Ferossinge", [Type.GRASS],1000,1,33,33,33,33,33,[]);
 describe("Instanciate Battle",()=> {
     test('Should', () => {
         let randomTool:RandomTool = new RandomTool(Math);
-        let griffe = new Attack("griffe",Type.NORMAL,40,false);
+        let griffe = new Attack("griffe",Type.NORMAL,40,false,100);
         let chenipan = new Pokemon("Chenipan", [Type.GRASS],1000,1,34,33,33,33,33,[griffe]);
         let ferossinge = new Pokemon("Ferossinge", [Type.GRASS],1000,1,33,33,33,33,33,[griffe]);
         let battle = new Battle(chenipan,ferossinge,typeObect,randomTool);
@@ -51,7 +51,7 @@ describe("Test Battle",()=>{
         });
 
         let randomTool:RandomTool = new RandomTool(Math);
-        griffe = new Attack("griffe",Type.NORMAL,40,false);
+        griffe = new Attack("griffe",Type.NORMAL,40,false,100);
         chenipan = new Pokemon("Chenipan", [Type.GRASS],1000,1,34,33,33,33,33,[griffe]);
         ferossinge = new Pokemon("Ferossinge", [Type.GRASS],1000,1,33,33,33,33,33,[griffe]);
         battle = new Battle(chenipan,ferossinge,typeObect,randomTool);

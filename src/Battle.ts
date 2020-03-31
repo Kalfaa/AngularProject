@@ -41,13 +41,19 @@ export class Battle {
         }
         let basedamage = Math.floor(Math.floor(Math.floor(2* attacker.level / 5+2)* A * moove.power / D))+2;
         let multiplicator = this.checkForStrenghtAndWeekness(receiver.type,moove.type);
-        let critical = this.criticalRandom();
+        let critical = this.random(6);
+        let accuracy = this.random(moove.accuracy); // this return 1 or 0
 
         let damage = (basedamage*multiplicator);
-        damage = damage +(damage*critical);
+        damage = damage +(damage*critical)*accuracy;
 
-        this.displayWeakness(multiplicator);
-        this.displayDamageTaken(receiver,damage);
+        if(accuracy == 1){
+            this.displayWeakness(multiplicator);
+            this.displayDamageTaken(receiver,damage);
+        }else{
+            this.displayAttackMissed(accuracy);
+        }
+
         receiver.hp= receiver.hp - damage
     }
 
@@ -129,10 +135,17 @@ export class Battle {
         console.log(receiver.name +" subit " + damage+" damage ");
     }
 
-    criticalRandom(){
-        if(this.randomTool.random(6)){
+    displayAttackMissed(isMissed:number){
+        if(isMissed==0){
+            console.log("Attack is missed")
+        }
+    }
+
+    random(rate:number){
+        if(this.randomTool.random(rate)){
             return 1;
         }
         return 0;
     }
+
 }
