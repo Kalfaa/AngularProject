@@ -1,10 +1,12 @@
 import {Pokemon} from "./Pokemon";
 import {Attack} from "./Attack";
+import {Type} from "./Type";
 
 export class Battle {
     static intervalId;
-    constructor(private readonly pokemon1:Pokemon ,private pokemon2:Pokemon){
-
+    public typeDict:Object;
+    constructor(private readonly pokemon1:Pokemon ,private pokemon2:Pokemon, typeDict:Array<Object>){
+        this.typeDict=Battle.loadTypeDict(typeDict);
     }
     start():Promise<Pokemon> {
         return new Promise((resolve, reject) => {
@@ -29,15 +31,20 @@ export class Battle {
     // L Level P
     //Damage = floor(floor(floor(2 * L / 5 + 2) * A * P / D) / 50) + 2
     public attack(attacker:Pokemon,receiver:Pokemon,moove:Attack):void{
-        console.log(attacker.name + " lance " + moove.name +" sur " +receiver.name);
+        this.displayMooveUsed(attacker,moove,receiver);
         let A = attacker.attack;
         let D = receiver.def;
         if (moove.special == true){
             A=attacker.attackSpe;
             D=receiver.defSpe;
         }
-        let damage = Math.floor(Math.floor(Math.floor(2* attacker.level / 5+2)* A * moove.power / D))+2;
-        console.log(receiver.name +" subit " + damage+" damage ")
+        let basedamage = Math.floor(Math.floor(Math.floor(2* attacker.level / 5+2)* A * moove.power / D))+2;
+        let multiplicator = this.checkForStrenghtAndWeekness(receiver.type,moove.type);
+
+        let damage = (basedamage*multiplicator);
+
+        this.displayWeakness(multiplicator);
+        this.displayDamageTaken(receiver,damage);
         receiver.hp= receiver.hp - damage
     }
 
@@ -71,5 +78,45 @@ export class Battle {
             result.push(pokemon1);
         }
         return result;
+    }
+
+    static loadTypeDict(typeDict:Array<Object>):Object{
+         let result:Object = {};
+         typeDict.forEach(type => {
+            result[type['name']]= type;
+         });
+        return result;
+    }
+
+    checkForStrenghtAndWeekness(receiverTypes:Type[],mooveType:Type):number {
+        let result:number =1;
+        receiverTypes.forEach(type=>{
+            if(this.typeDict[mooveType]["strengths"].includes(type)){
+                result = result*2
+            }else if (this.typeDict[mooveType]["weaknesses"].includes(type)){
+                result = result*0.5
+            }else if (this.typeDict[mooveType]["immunes"].includes(type)){
+                return 0;
+            }
+        });
+        return result;
+    }
+
+    displayWeakness(multiplicator:number):void{
+        if(multiplicator==2){
+            console.log("Ce n'est pas très efficace")
+        }else if(multiplicator ==0.5 || multiplicator == 0.25){
+            console.log("Ce n'est pas très efficace ...")
+        }else if(multiplicator ==0){
+            console.log("Aucun effet")
+        }
+    }
+
+    displayMooveUsed(attacker:Pokemon,moove:Attack,receiver:Pokemon):void{
+        console.log(attacker.name + " lance " + moove.name +" sur " +receiver.name);
+    }
+
+    displayDamageTaken(receiver:Pokemon,damage:number):void{
+        console.log(receiver.name +" subit " + damage+" damage ");
     }
 }
