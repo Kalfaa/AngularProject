@@ -2,6 +2,8 @@ import {Type} from "../src/Type";
 import {Attack} from "../src/Attack";
 import {Pokemon} from "../src/Pokemon";
 import {Battle} from "../src/Battle";
+import {RandomTool} from "../src/RandomTool";
+
 
 let typeObect = [{"name":"NORMAL","immunes":["GHOST"],"weaknesses":["ROCK","STEEL"],"strengths":[]},
     {"name":"FIRE","immunes":[],"weaknesses":["FIRE","WATER","ROCK","DRAGON"],"strengths":["GRASS","ICE","BUG","STEEL"]},
@@ -26,23 +28,33 @@ let pkm2 = new Pokemon("Ferossinge", [Type.GRASS],1000,1,33,33,33,33,33,[]);
 
 describe("Instanciate Battle",()=> {
     test('Should', () => {
+        let randomTool:RandomTool = new RandomTool(Math);
         let griffe = new Attack("griffe",Type.NORMAL,40,false);
         let chenipan = new Pokemon("Chenipan", [Type.GRASS],1000,1,34,33,33,33,33,[griffe]);
         let ferossinge = new Pokemon("Ferossinge", [Type.GRASS],1000,1,33,33,33,33,33,[griffe]);
-        let battle = new Battle(chenipan,ferossinge,typeObect);
+        let battle = new Battle(chenipan,ferossinge,typeObect,randomTool);
     });
 });
 
 describe("Test Battle",()=>{
+
     let griffe;
     let chenipan;
     let ferossinge;
     let battle:Battle;
     beforeEach(() => {
+        const random = jest.fn().mockReturnValueOnce(false);
+        jest.mock('../src/RandomTool', () => {
+            return jest.fn().mockImplementation(() => {
+                return {random: random};
+            });
+        });
+
+        let randomTool:RandomTool = new RandomTool(Math);
         griffe = new Attack("griffe",Type.NORMAL,40,false);
         chenipan = new Pokemon("Chenipan", [Type.GRASS],1000,1,34,33,33,33,33,[griffe]);
         ferossinge = new Pokemon("Ferossinge", [Type.GRASS],1000,1,33,33,33,33,33,[griffe]);
-        battle = new Battle(chenipan,ferossinge,typeObect);
+        battle = new Battle(chenipan,ferossinge,typeObect,randomTool);
     });
 
     test('Should apply damage', () => {
@@ -59,7 +71,8 @@ describe("Test Battle",()=>{
 });
 
 describe("Test weakness and strenghts",()=> {
-    let battle= new Battle(pkm1,pkm2,typeObect);
+    let randomTool:RandomTool = new RandomTool(Math);
+    let battle= new Battle(pkm1,pkm2,typeObect,randomTool);
     test('checkForStrenghtAndWeekness apply good modificator * 4', () => {
         let res = battle.checkForStrenghtAndWeekness([Type.FLYING, Type.WATER], Type.ELECTRIC);
         expect(res).toBe(4);

@@ -1,11 +1,12 @@
 import {Pokemon} from "./Pokemon";
 import {Attack} from "./Attack";
 import {Type} from "./Type";
+import {RandomTool} from "./RandomTool";
 
 export class Battle {
     static intervalId;
     public typeDict:Object;
-    constructor(private readonly pokemon1:Pokemon ,private pokemon2:Pokemon, typeDict:Array<Object>){
+    constructor(private readonly pokemon1:Pokemon ,private pokemon2:Pokemon, typeDict:Array<Object>,public randomTool:RandomTool){
         this.typeDict=Battle.loadTypeDict(typeDict);
     }
     start():Promise<Pokemon> {
@@ -40,8 +41,10 @@ export class Battle {
         }
         let basedamage = Math.floor(Math.floor(Math.floor(2* attacker.level / 5+2)* A * moove.power / D))+2;
         let multiplicator = this.checkForStrenghtAndWeekness(receiver.type,moove.type);
+        let critical = this.criticalRandom();
 
         let damage = (basedamage*multiplicator);
+        damage = damage +(damage*critical);
 
         this.displayWeakness(multiplicator);
         this.displayDamageTaken(receiver,damage);
@@ -60,8 +63,8 @@ export class Battle {
     public priority(pokemon1:Pokemon,pokemon2:Pokemon):Pokemon[]{
         let result:Pokemon[] =[];
         if (pokemon2.speed == pokemon1.speed){
-             let res = Math.floor(Math.random() * Math.floor(1));
-             if (res == 1){
+             let res :boolean=this.randomTool.random(50);
+             if (res){
                  result.push(pokemon1);
                  result.push(pokemon2);
                  return result;
@@ -124,5 +127,12 @@ export class Battle {
 
     displayDamageTaken(receiver:Pokemon,damage:number):void{
         console.log(receiver.name +" subit " + damage+" damage ");
+    }
+
+    criticalRandom(){
+        if(this.randomTool.random(6)){
+            return 1;
+        }
+        return 0;
     }
 }
